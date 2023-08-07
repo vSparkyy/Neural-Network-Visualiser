@@ -19,6 +19,14 @@ To use the Neural Network Visualiser, follow these steps:
 
 ```python main.py```
 
+**OR**
+
+1. Press the green '<> Code' button and download the ZIP file
+
+2. Extract the contents of the ZIP file into one folder
+
+3. Run the `main.py` script to start the application
+
 ## Usage
 
 The application allows you to draw on the canvas using the left mouse button (to draw) and the right mouse button (to erase). Press the 'R' key to reset the canvas. Press the spacebar to start the training process, and you can control the number of training epochs using the epoch slider. Press 'C' to unlock the epoch slider and train the neural network again.
