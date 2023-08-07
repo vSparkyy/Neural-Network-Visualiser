@@ -64,7 +64,7 @@ The Neural Network Visualiser requires the following dependencies:
 
 ## License
 
-This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## Credits
 
