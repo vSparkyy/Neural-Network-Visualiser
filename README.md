@@ -3,6 +3,8 @@
 
 A Python application that allows you to visualise the training process of a neural network. You can draw digits on the canvas, and the neural network will be trained on the MNIST database to recognise handwritten digits.
 
+https://github.com/vSparkyy/Neural-Network-Visualiser/assets/75097362/8664e0a2-de4b-4e1a-8203-b082d3dbd61c
+
 ## Getting Started
 
 To use the Neural Network Visualiser, follow these steps:
