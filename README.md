@@ -79,7 +79,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 ## Credits
 
 - Neural Network implementation by vSparkyy
-- Assets by Jarmishan
+- Assets by jarmishan
 
 ## Contributing
 
