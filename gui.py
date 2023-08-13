@@ -6,7 +6,7 @@ import numpy as np
 # Constants
 COLOURS = {
     'BAR': (38, 58, 76),
-    'WHITE': (200, 200, 200),
+    'WHITE': (255, 255, 255),
     'GREEN': (0, 163, 73)
 }
 BAR_WIDTH = 250
@@ -17,6 +17,7 @@ PIXEL_FONT_SIZE = 30
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 ASSETS = {
     'BAR_FRAME': os.path.join(BASE_PATH, "assets/bar_frame.png"),
+    'PERCENTAGE_BAR_END': os.path.join(BASE_PATH, "assets/percentage_bar_end.png"),
     'SLIDER': os.path.join(BASE_PATH, "assets/slider.png"),
     'PIXEL_FONT': os.path.join(BASE_PATH, "assets/pixel_font.ttf"),
 }
@@ -26,6 +27,7 @@ pygame.init()
 FONT = pygame.font.Font(ASSETS['PIXEL_FONT'], PIXEL_FONT_SIZE)
 BAR_FRAME_IMAGE = pygame.image.load(ASSETS['BAR_FRAME'])
 SLIDER_IMAGE = pygame.image.load(ASSETS['SLIDER'])
+PERCENTAGE_BAR_END_IMAGE = pygame.image.load(ASSETS['PERCENTAGE_BAR_END'])
 
 
 class UIManager:
@@ -38,6 +40,57 @@ class UIManager:
         """Draw all elements on the given surface."""
         for element in self.elements:
             element.update(surface)
+
+class PercentageBar:
+    """Class representing a percentage bar."""
+    def __init__(self, label, percentage):
+        self.label = label
+        self.percentage = float(percentage)
+        self.x = 595
+        self.y = self.label * (BAR_HEIGHT + 32) + 32
+        self.position = (self.x, self.y)
+        self.label_font = FONT.render(str(self.label), False, COLOURS['WHITE'])
+        self.bar_rect = pygame.Rect(
+            self.x + 9, self.y + 4, BAR_WIDTH - 18, BAR_HEIGHT - 8)
+        self.percentage_font = None
+        self.update_bar(percentage)
+
+    def update_bar(self, percentage):
+        """Update the percentage of the bar and render the percentage text."""
+        self.percentage = float(percentage)
+        self.percentage_font = FONT.render(
+            f"{(self.percentage * 100):.1f}%", False, COLOURS['WHITE'])
+        self.bar_rect.width = int(self.percentage * (BAR_WIDTH - 18))
+
+
+class PercentageHandler:
+    """Class to handle multiple percentage bars."""
+    def __init__(self):
+        self.percentage_bars = [PercentageBar(i, 0) for i in range(10)]
+
+    def percentage_data(self, data):
+        """Update the data for the percentage bars."""
+        if data is not None:
+            highest = np.argmax([percentage for _, percentage in data])
+            for percentage_bar, (label, percentage) in zip(self.percentage_bars, data):
+                percentage_bar.update_bar(percentage)
+                if label == highest:
+                    percentage_bar.label_font = FONT.render(
+                        str(percentage_bar.label), False, COLOURS['GREEN'])
+                else:
+                    percentage_bar.label_font = FONT.render(
+                        str(percentage_bar.label), False, COLOURS['WHITE'])
+
+
+    def update(self, surface):
+        """Update the surface with the percentage bars."""
+        for percentage_bar in self.percentage_bars:
+            surface.blit(BAR_FRAME_IMAGE, percentage_bar.position)
+            surface.blit(PERCENTAGE_BAR_END_IMAGE, percentage_bar.position)
+            pygame.draw.rect(surface, COLOURS['BAR'], percentage_bar.bar_rect)
+            surface.blit(pygame.transform.flip(PERCENTAGE_BAR_END_IMAGE, True, False), (percentage_bar.bar_rect.right - 241, percentage_bar.y))
+            surface.blit(percentage_bar.label_font, (percentage_bar.x - 25, percentage_bar.y - 1))
+            surface.blit(percentage_bar.percentage_font, (percentage_bar.x + 180, percentage_bar.y - 1))
 
 
 class Slider:

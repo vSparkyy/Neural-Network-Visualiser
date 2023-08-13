@@ -15,16 +15,16 @@ WHITE = (255, 255, 255)
 BLACK = (28, 28, 28)
 THEME_COLOUR = (38, 58, 76)
 
-# Initialize Pygame
+# Initialise Pygame
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Neural Network Visualiser")
 
-# Initialize the drawing grid and other variables
+# Initialise the drawing grid and other variables
 drawing_grid = np.zeros((CELLS, CELLS), dtype=int)
 clock = pygame.time.Clock()
 previous_pos = None
-prev_values = [0, 0]
+prev_value = 0
 title = True
 controls = False
 selected_epochs = False
@@ -32,11 +32,11 @@ is_drawing = False
 is_alive = False
 
 nn = NeuralNetwork()
-ui_manager = UIManager([percentage_handler := PercentageHandler(),
-                       epoch_slider := Slider((25, 580), 20, 1),
-                       wait_time_slider := Slider((25, 620), 1000, 0, "ms"),
-                       accuracy := TextBox("UNTRAINED", (400, 620)),
-                       epoch := TextBox("EPOCH 0/1", (400, 580))])
+ui_manager = UIManager([percentage_handler:= PercentageHandler(),
+                       epoch_slider:= Slider((25, 580), 20, 1),
+                       wait_time_slider:= Slider((25, 620), 1000, 0, "ms"),
+                       accuracy:= TextBox("UNTRAINED", (385, 620), colour="red"),
+                       epoch:= TextBox("EPOCH 0/1", (385, 580), target_word="EPOCH")])
 
 
 def train_neural_network(epochs: int) -> None:
@@ -47,7 +47,7 @@ def train_neural_network(epochs: int) -> None:
     drawing_grid.fill(0)
 
 
-def draw_smooth_line(start_pos, end_pos, colour, training, brush_size=10):
+def draw_smooth_line(start_pos: tuple, end_pos: tuple, colour: int, training: bool, brush_size=10) -> None:
     """
     Draw a smooth line on the grid.
 
@@ -107,7 +107,7 @@ def title_screen(screen) -> bool:
     """
     boxes = [
         TextBox("Neural Network Visualiser", (100, SCREEN_HEIGHT //
-                                               2 - 200), font_size=60, colour=THEME_COLOUR),
+                2 - 200), font_size=60, colour=THEME_COLOUR),
         TextBox("Trained on the MNIST database",
                 (150, SCREEN_HEIGHT // 2 - 100), font_size=45),
         TextBox("By vSparkyy", (350, SCREEN_HEIGHT // 2),
@@ -115,7 +115,7 @@ def title_screen(screen) -> bool:
         TextBox("Assets by Jarmishan", (335, SCREEN_HEIGHT // 2 + 25),
                 colour=THEME_COLOUR, font_size=20),
         TextBox("[PRESS ENTER AT ANY TIME FOR CONTROLS...]",
-                (85, SCREEN_HEIGHT // 2 + 200), font_size=40, target_word="ENTER", target_colour=THEME_COLOUR)
+                (85, SCREEN_HEIGHT // 2 + 200), font_size=40, target_word="ENTER")
     ]
     start_time = pygame.time.get_ticks()
     title_duration = 4000
@@ -149,16 +149,18 @@ def control_screen(screen) -> bool:
         bool: True if the user presses enter, False otherwise.
     """
     text_boxes = [
-        TextBox("R - Reset grid", (300, SCREEN_HEIGHT // 2 - 200),
-                font_size=40, target_word="R", target_colour=THEME_COLOUR),
-        TextBox("Space - Begin training", (250, SCREEN_HEIGHT // 2 - 100),
-                font_size=40, target_word="Space", target_colour=THEME_COLOUR),
-        TextBox("C - Unlock epoch slider (to train again)", (100, SCREEN_HEIGHT // 2),
-                font_size=40, target_word="C", target_colour=THEME_COLOUR),
-        TextBox("Left/Right Click - Draw/Erase", (180, SCREEN_HEIGHT // 2 + 100),
-                font_size=40, target_word="Left/Right", target_colour=THEME_COLOUR),
-        TextBox("Press enter again to exit this screen...", (185, SCREEN_HEIGHT // 2 + 200),
-                target_word="enter", target_colour=THEME_COLOUR),
+        TextBox("R - Reset grid", (300, SCREEN_HEIGHT // 2 - 275),
+                font_size=40, target_word="R"),
+        TextBox("Space - Begin training", (250, SCREEN_HEIGHT // 2 - 175),
+                font_size=40, target_word="Space"),
+        TextBox("C - Unlock epoch slider (to train again)", (100, SCREEN_HEIGHT // 2 - 75),
+                font_size=40, target_word="C"),
+        TextBox("G - Generate random noise", (200, SCREEN_HEIGHT // 2 + 15),
+                font_size=40, target_word="G"),
+        TextBox("Left/Right Click - Draw/Erase", (180, SCREEN_HEIGHT // 2 + 115),
+                font_size=40, target_word="Left/Right"),
+        TextBox("Press enter again to exit this screen...", (185, SCREEN_HEIGHT // 2 + 215),
+                target_word="enter")
     ]
     exit_screen = False
 
@@ -194,18 +196,24 @@ while True:
 
             if event.key == pygame.K_SPACE and not selected_epochs:
                 selected_epochs = True
-                prev_values[0] = nn.current_epoch
                 training_thread = threading.Thread(
                     target=train_neural_network, args=[int(epoch_slider.current_value)])
                 training_thread.start()
 
             if event.key == pygame.K_c and selected_epochs:
-                prev_values[1] = int(epoch_slider.current_value)
+                prev_value = int(epoch_slider.current_value) + prev_value
                 selected_epochs = False
                 epoch_slider.lock("off")
 
             if event.key == pygame.K_RETURN:
                 controls = True
+
+            if event.key == pygame.K_g and selected_epochs and not is_alive:
+                drawing_grid = np.random.uniform(0, 1, (28, 28)) ** 2
+
+            if event.key == pygame.K_k:
+                print(f"previous value: {prev_value}\nepoch slider current value: {int(epoch_slider.current_value)}\ncurrent epoch neural network: {nn.current_epoch}\n")
+
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1 or event.button == 3:
@@ -233,6 +241,7 @@ while True:
             percentage_handler.percentage_data(
                 nn.get_percentages(nn.layers[-1].output))
             pygame.time.wait(int(wait_time_slider.current_value))
+            accuracy.colour = (0, 163, 73)
             accuracy.text = f"{'TRAINING...' if not nn.accuracy else nn.accuracy + '% ACCURACY'}"
 
         if not is_alive:
@@ -240,7 +249,7 @@ while True:
             percentage_handler.percentage_data(nn.get_percentages(nn.image))
             nn.test(drawing_grid.flatten().reshape(-1, 1))
 
-    epoch.text = f"EPOCH {nn.current_epoch + prev_values[0]}/{int(epoch_slider.current_value) + prev_values[1]}"
+    epoch.text = f"EPOCH {nn.current_epoch}/{int(epoch_slider.current_value) + prev_value}"
 
     screen.fill(BLACK)
     if title:
