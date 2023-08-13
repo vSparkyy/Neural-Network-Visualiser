@@ -1,4 +1,4 @@
-# Neural-Network-Visualiser
+# Neural Network Visualiser
 ## A Neural Network trained on the MNIST database visualised with Pygame.
 
 A Python application that allows you to visualise the training process of a neural network. You can draw digits on the canvas, and the neural network will be trained on the MNIST database to recognise handwritten digits.
