@@ -43,6 +43,7 @@ class UIManager:
 
 class PercentageBar:
     """Class representing a percentage bar."""
+    
     def __init__(self, label, percentage):
         self.label = label
         self.percentage = float(percentage)
@@ -65,6 +66,7 @@ class PercentageBar:
 
 class PercentageHandler:
     """Class to handle multiple percentage bars."""
+
     def __init__(self):
         self.percentage_bars = [PercentageBar(i, 0) for i in range(10)]
 
