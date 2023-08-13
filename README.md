@@ -9,6 +9,18 @@ https://github.com/vSparkyy/Neural-Network-Visualiser/assets/75097362/8664e0a2-d
 
 To use the Neural Network Visualiser, follow these steps:
 
+1. Head over to the releases page below
+
+2. Download the source code of the latest release 
+
+3. Install the required dependencies using `pip`:
+
+```pip install pygame numpy```
+
+4. Unzip the contents of the file and run the ``main.py`` script to start the application
+
+**OR**
+
 1. Clone the repository to your local machine:
 
 ```git clone https://github.com/vSparkyy/Neural-Network-Visualiser.git```
@@ -20,14 +32,6 @@ To use the Neural Network Visualiser, follow these steps:
 3. Run the `main.py` script to start the application:
 
 ```python main.py```
-
-**OR**
-
-1. Press the green '<> Code' button and download the ZIP file
-
-2. Extract the contents of the ZIP file into one folder
-
-3. Run the `main.py` script to start the application
 
 ## Usage
 
