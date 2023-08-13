@@ -9,7 +9,7 @@ https://github.com/vSparkyy/Neural-Network-Visualiser/assets/75097362/8664e0a2-d
 
 To use the Neural Network Visualiser, follow these steps:
 
-1. Head over to the releases page below
+1. Head over to the releases page
 
 2. Download the source code of the latest release 
 
