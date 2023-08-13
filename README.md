@@ -1,9 +1,22 @@
 # Neural Network Visualiser
-## A Neural Network trained on the MNIST database visualised with Pygame.
-
 A Python application that allows you to visualise the training process of a neural network. You can draw digits on the canvas, and the neural network will be trained on the MNIST database to recognise handwritten digits.
 
+## Features
+
+- Real-time visualisation of neural network training
+- Interactive canvas for drawing and erasing digits
+- Adjustable training epochs
+- Percentage bars showing the output probabilities of each digit
+
 https://github.com/vSparkyy/Neural-Network-Visualiser/assets/75097362/8664e0a2-de4b-4e1a-8203-b082d3dbd61c
+
+## Dependencies
+
+The Neural Network Visualiser requires the following dependencies:
+
+- Python 3.x
+- Pygame
+- Numpy
 
 ## Getting Started
 
@@ -60,21 +73,6 @@ Sigmoid Function: `1 / (1 + exp(-x))`
 The loss function used for training the neural network is the Binary Cross-Entropy (BCE) loss. It measures the difference between the predicted output and the actual target.
 
 BCE Loss Derivative: `((1 - y_true) / (1 - y_pred) - y_true / y_pred) / np.size(y_true)`
-
-## Features
-
-- Real-time visualisation of neural network training
-- Interactive canvas for drawing and erasing digits
-- Adjustable training epochs
-- Percentage bars showing the output probabilities of each digit
-
-## Dependencies
-
-The Neural Network Visualiser requires the following dependencies:
-
-- Python 3.x
-- Pygame
-- Numpy
 
 ## License
 
