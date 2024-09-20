@@ -43,7 +43,6 @@ class UIManager:
 
 class PercentageBar:
     """Class representing a percentage bar."""
-    
     def __init__(self, label, percentage):
         self.label = label
         self.percentage = float(percentage)
@@ -66,7 +65,6 @@ class PercentageBar:
 
 class PercentageHandler:
     """Class to handle multiple percentage bars."""
-
     def __init__(self):
         self.percentage_bars = [PercentageBar(i, 0) for i in range(10)]
 
@@ -195,7 +193,7 @@ class TextBox:
 
             word_width = text_surface.get_width()
 
-            if word == self.target_word and self.target_colour is not None:
+            if word == self.target_word:
                 word_surface = self.font.render(
                     word, False, self.target_colour)
                 surface.blit(word_surface, (x_offset, y_offset))

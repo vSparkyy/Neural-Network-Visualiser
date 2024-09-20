@@ -78,9 +78,9 @@ class NeuralNetwork:
         self.learning_rate = 0.1
         self.correct = 0
         self.layers = [
-            Layer(784, 20),
-            Layer(20, 20),
-            Layer(20, 10),
+            Layer(784, 25),
+            Layer(25, 25),
+            Layer(25, 10),
         ]
 
     def forward_propagate(self, image: np.ndarray) -> None:
@@ -102,13 +102,13 @@ class NeuralNetwork:
         Args:
             label (np.ndarray): The target label corresponding to the input image.
         """
-        error = self.bce_derivative(label, self.layers[-1].output)
+        error = self.triplet_softmax_derivative(label, self.layers[-1].output)
         for layer in reversed(self.layers):
             error = layer.backward_propagate(error, self.learning_rate)
 
-    def bce_derivative(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
+    def triplet_softmax_derivative(self, y_true: np.ndarray, y_pred: np.ndarray) -> np.ndarray:
         """
-        Calculate the derivative of the binary cross-entropy loss function.
+        Calculate the derivative of the triplet softmax loss function.
 
         Args:
             y_true (np.ndarray): The true labels.
@@ -117,9 +117,12 @@ class NeuralNetwork:
         Returns:
             np.ndarray: The gradient of the loss function.
         """
-        return ((1 - y_true) / (1 - y_pred) - y_true / y_pred) / np.size(y_true)
+        y_pred_softmax = np.exp(y_pred) / np.sum(np.exp(y_pred), axis=0, keepdims=True)
+        return y_pred_softmax - y_true
 
-    def train(self, epochs: int = 10) -> None:
+        # return ((1 - y_true) / (1 - y_pred) - y_true / y_pred) / np.size(y_true) OLD BCE CODE
+
+    def train(self, epochs: int=10) -> None:
         """
         Train the neural network for the specified number of epochs.
 
@@ -128,7 +131,7 @@ class NeuralNetwork:
         """
         self.epochs = epochs
         for epoch in range(self.epochs):
-            self.current_epoch = epoch + 1
+            self.current_epoch += 1
             for img, lbl in zip(self.images, self.labels):
                 self.img = img.reshape(-1, 1)
                 self.lbl = lbl.reshape(-1, 1)

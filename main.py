@@ -1,11 +1,10 @@
 import sys
-import threading
-
 import pygame
+import threading
 import numpy as np
 
 from driver import NeuralNetwork
-from gui import UIManager, PercentageHandler, TextBox, Slider
+from gui import *
 
 # Constants
 SCREEN_WIDTH, SCREEN_HEIGHT = 860, 660
@@ -33,13 +32,12 @@ is_drawing = False
 is_alive = False
 
 nn = NeuralNetwork()
-ui_manager = UIManager([
-    percentage_handler := PercentageHandler(), 
-    epoch_slider := Slider((25, 580), 20, 1), 
-    wait_time_slider := Slider((25, 620), 1000, 0, "ms"), 
-    accuracy := TextBox("UNTRAINED", (385, 620), colour="red"), 
-    epoch := TextBox("EPOCH 0/1", (385, 580), target_word="EPOCH")
-])
+ui_manager = UIManager([percentage_handler:= PercentageHandler(),
+                       epoch_slider:= Slider((25, 580), 20, 1),
+                       wait_time_slider:= Slider((25, 620), 1000, 0, "ms"),
+                       accuracy:= TextBox("UNTRAINED", (345, 620), colour="red"),
+                       epoch:= TextBox("EPOCH 0/1", (345, 580), target_word="EPOCH"),
+                       controls:= TextBox("PRESS ENTER FOR CONTROLS", (500, 600), target_word="ENTER")])
 
 
 def train_neural_network(epochs: int) -> None:
@@ -50,11 +48,7 @@ def train_neural_network(epochs: int) -> None:
     drawing_grid.fill(0)
 
 
-def draw_smooth_line(start_pos: tuple,
-                     end_pos: tuple,
-                     colour: int,
-                     training: bool,
-                     brush_size=10) -> None:
+def draw_smooth_line(start_pos: tuple, end_pos: tuple, colour: int, training: bool, brush_size=10) -> None:
     """
     Draw a smooth line on the grid.
 
@@ -73,7 +67,7 @@ def draw_smooth_line(start_pos: tuple,
     distance = max(abs(dx), abs(dy))
     if distance == 0:
         distance = 1
-
+ 
     for i in range(distance + 1):
         x = start_pos[0] + int(i * dx / distance)
         y = start_pos[1] + int(i * dy / distance)
@@ -94,12 +88,10 @@ def draw_grid(screen) -> None:
             greyscale = drawing_grid[col][row] * 255
             if greyscale <= 28:
                 pygame.draw.rect(
-                    screen, BLACK,
-                    (row * CELL_SIZE, col * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                    screen, BLACK, (row * CELL_SIZE, col * CELL_SIZE, CELL_SIZE, CELL_SIZE))
             else:
-                pygame.draw.rect(
-                    screen, (greyscale, greyscale, greyscale),
-                    (row * CELL_SIZE, col * CELL_SIZE, CELL_SIZE, CELL_SIZE))
+                pygame.draw.rect(screen, (greyscale, greyscale, greyscale),
+                                 (row * CELL_SIZE, col * CELL_SIZE, CELL_SIZE, CELL_SIZE))
 
     for x in range(0, GRID_SIZE + 1, CELL_SIZE):
         pygame.draw.line(screen, WHITE, (x, 0), (x, GRID_SIZE))
@@ -115,27 +107,22 @@ def title_screen(screen) -> bool:
         bool: True if the user presses enter, False otherwise.
     """
     boxes = [
-        TextBox("Neural Network Visualiser", (100, SCREEN_HEIGHT // 2 - 200),
-                font_size=60,
-                colour=THEME_COLOUR),
+        TextBox("Neural Network Visualiser", (100, SCREEN_HEIGHT //
+                2 - 200), font_size=60, colour=THEME_COLOUR),
         TextBox("Trained on the MNIST database",
-                (150, SCREEN_HEIGHT // 2 - 100),
-                font_size=45),
-        TextBox("By vSparkyy", (350, SCREEN_HEIGHT // 2), colour=THEME_COLOUR),
+                (150, SCREEN_HEIGHT // 2 - 100), font_size=45),
+        TextBox("By vSparkyy", (350, SCREEN_HEIGHT // 2),
+                colour=THEME_COLOUR),
         TextBox("Assets by Jarmishan", (335, SCREEN_HEIGHT // 2 + 25),
-                colour=THEME_COLOUR,
-                font_size=20),
+                colour=THEME_COLOUR, font_size=20),
         TextBox("[PRESS ENTER AT ANY TIME FOR CONTROLS...]",
-                (85, SCREEN_HEIGHT // 2 + 200),
-                font_size=40,
-                target_word="ENTER")
+                (85, SCREEN_HEIGHT // 2 + 200), font_size=40, target_word="ENTER")
     ]
     start_time = pygame.time.get_ticks()
     title_duration = 4000
     exit_screen = False
 
-    while pygame.time.get_ticks(
-    ) - start_time < title_duration and not exit_screen:
+    while pygame.time.get_ticks() - start_time < title_duration and not exit_screen:
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
@@ -164,24 +151,16 @@ def control_screen(screen) -> bool:
     """
     text_boxes = [
         TextBox("R - Reset grid", (300, SCREEN_HEIGHT // 2 - 275),
-                font_size=40,
-                target_word="R"),
+                font_size=40, target_word="R"),
         TextBox("Space - Begin training", (250, SCREEN_HEIGHT // 2 - 175),
-                font_size=40,
-                target_word="Space"),
-        TextBox("C - Unlock epoch slider (to train again)",
-                (100, SCREEN_HEIGHT // 2 - 75),
-                font_size=40,
-                target_word="C"),
+                font_size=40, target_word="Space"),
+        TextBox("C - Unlock epoch slider (to train again)", (100, SCREEN_HEIGHT // 2 - 75),
+                font_size=40, target_word="C"),
         TextBox("G - Generate random noise", (200, SCREEN_HEIGHT // 2 + 15),
-                font_size=40,
-                target_word="G"),
-        TextBox("Left/Right Click - Draw/Erase",
-                (180, SCREEN_HEIGHT // 2 + 115),
-                font_size=40,
-                target_word="Left/Right"),
-        TextBox("Press enter again to exit this screen...",
-                (185, SCREEN_HEIGHT // 2 + 215),
+                font_size=40, target_word="G"),
+        TextBox("Left/Right Click - Draw/Erase", (180, SCREEN_HEIGHT // 2 + 115),
+                font_size=40, target_word="Left/Right"),
+        TextBox("Press enter again to exit this screen...", (185, SCREEN_HEIGHT // 2 + 215),
                 target_word="enter")
     ]
     exit_screen = False
@@ -219,8 +198,7 @@ while True:
             if event.key == pygame.K_SPACE and not selected_epochs:
                 selected_epochs = True
                 training_thread = threading.Thread(
-                    target=train_neural_network,
-                    args=[int(epoch_slider.current_value)])
+                    target=train_neural_network, args=[int(epoch_slider.current_value)])
                 training_thread.start()
 
             if event.key == pygame.K_c and selected_epochs:
@@ -232,12 +210,11 @@ while True:
                 controls = True
 
             if event.key == pygame.K_g and selected_epochs and not is_alive:
-                drawing_grid = np.random.uniform(0, 1, (28, 28))**2
+                drawing_grid = np.random.uniform(0, 1, (28, 28)) ** 2
 
             if event.key == pygame.K_k:
-                print(
-                    f"previous value: {prev_value}\nepoch slider current value: {int(epoch_slider.current_value)}\ncurrent epoch neural network: {nn.current_epoch}\n"
-                )
+                print(f"previous value: {prev_value}\nepoch slider current value: {int(epoch_slider.current_value)}\ncurrent epoch neural network: {nn.current_epoch}\n")
+
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1 or event.button == 3:
@@ -253,8 +230,8 @@ while True:
         if is_drawing and selected_epochs:
             current_pos = pygame.mouse.get_pos()
             if previous_pos:
-                draw_smooth_line(previous_pos, current_pos, brush_colour,
-                                 training_thread.is_alive())
+                draw_smooth_line(previous_pos, current_pos,
+                                 brush_colour, training_thread.is_alive())
             previous_pos = current_pos
 
     if selected_epochs:
